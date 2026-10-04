@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Bandeja de WhatsApp con IA</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23131A22'/><path d='M8 11.5A3.5 3.5 0 0 1 11.5 8h9a3.5 3.5 0 0 1 3.5 3.5v5a3.5 3.5 0 0 1-3.5 3.5H15l-5 4v-4.3A3.5 3.5 0 0 1 8 16.5z' fill='%23F3F5F2'/><circle cx='23' cy='9' r='4.5' fill='%23E5A50A'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Recursive:wght,CASL,MONO@300..1000,0..1,0..1&display=swap">
+  <link rel="stylesheet" href="css/app.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/10.0.11/signalr.min.js"
+          integrity="sha512-zV6tEyYm1c6KHVZUHmZUDIM/mWFZ5nHt08kt682k98cvUMAHTyJ0ZQkv2Q+KWIbbwN0wnboWYEvqbOztWwlMpg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+  <!-- Los textos llevan data-i18n: app.js los traduce al idioma elegido (español o inglés). -->
+  <div class="app" data-view="list">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand__mark" data-i18n="brand.mark">Bandeja</span>
+        <span class="brand__tag" data-i18n="brand.tag">WhatsApp + IA</span>
+      </div>
+      <div class="topbar__end">
+        <ul class="chips" data-i18n-attr="aria-label:chips.label">
+          <li class="chip" id="chip-ai" data-tone="off"><i class="lamp" aria-hidden="true"></i><span class="chip__text">IA</span></li>
+          <li class="chip" id="chip-whatsapp" data-tone="off"><i class="lamp" aria-hidden="true"></i><span class="chip__text">WhatsApp</span></li>
+          <li class="chip" id="chip-live" data-tone="off"><i class="lamp" aria-hidden="true"></i><span class="chip__text">…</span></li>
+        </ul>
+        <div class="lang" role="group" data-i18n-attr="aria-label:language.label">
+          <button type="button" data-lang="es" lang="es" title="Español" aria-pressed="true">ES</button>
+          <button type="button" data-lang="en" lang="en" title="English" aria-pressed="false">EN</button>
+        </div>
+      </div>
+    </header>
+
+    <aside class="sidebar" data-i18n-attr="aria-label:sidebar.title">
+      <div class="sidebar__head">
+        <h2 data-i18n="sidebar.title">Conversaciones</h2>
+        <button class="btn btn--ghost btn--small" type="button" data-action="simulate">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          <span data-i18n="sidebar.simulate">Simular mensaje</span>
+        </button>
+      </div>
+      <p class="sidebar__empty" id="list-empty" data-i18n="sidebar.empty">Aún no hay conversaciones.</p>
+      <ul class="conversations" id="conversations"></ul>
+    </aside>
+
+    <main class="thread">
+      <section class="onboarding" id="onboarding" hidden>
+        <p class="onboarding__eyebrow" data-i18n="onboarding.eyebrow">Sandbox de WhatsApp de Twilio</p>
+        <h1 data-i18n="onboarding.title">Escribe por WhatsApp y mira llegar el mensaje</h1>
+        <ol class="steps">
+          <li id="step-join"></li>
+          <li data-i18n="onboarding.step2"></li>
+          <li data-i18n="onboarding.step3"></li>
+        </ol>
+        <p class="onboarding__alt">
+          <span data-i18n="onboarding.alt">¿Sin teléfono a mano?</span>
+          <button class="link" type="button" data-action="simulate" data-i18n="onboarding.simulate">Simula un mensaje</button>
+        </p>
+      </section>
+
+      <section class="placeholder" id="placeholder" hidden>
+        <p data-i18n="placeholder">Elige una conversación para ver los mensajes.</p>
+      </section>
+
+      <div class="chat" id="chat" hidden>
+        <header class="chat__head">
+          <button class="icon-btn chat__back" type="button" id="back" data-i18n-attr="aria-label:chat.back">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H6M11 6l-6 6 6 6"/></svg>
+          </button>
+          <span class="avatar" id="chat-avatar" aria-hidden="true"></span>
+          <div class="chat__who">
+            <h1 id="chat-name"></h1>
+            <p id="chat-phone"></p>
+          </div>
+          <div class="handoff" role="group" aria-labelledby="handoff-label">
+            <span class="handoff__label" id="handoff-label" data-i18n="handoff.label">Responde</span>
+            <div class="handoff__track" id="handoff">
+              <button class="handoff__option" type="button" data-owner="ai" aria-pressed="true">
+                <svg class="icon icon--fill" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.1 6.4 6.4 2.1-6.4 2.1L12 19.5l-2.1-6.4L3.5 11l6.4-2.1z"/></svg>
+                <span data-i18n="author.ai">IA</span>
+              </button>
+              <button class="handoff__option" type="button" data-owner="agent" aria-pressed="false">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.2-3.6 4-5.5 7-5.5s5.8 1.9 7 5.5"/></svg>
+                <span data-i18n="author.agent">Asesor</span>
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <ol class="messages" id="messages" role="log" aria-live="polite" data-i18n-attr="aria-label:messages.label"></ol>
+
+        <form class="composer" id="composer">
+          <label class="visually-hidden" for="composer-text" data-i18n="composer.label">Respuesta</label>
+          <textarea id="composer-text" rows="1" maxlength="1600"></textarea>
+          <button class="btn btn--primary" type="submit" id="send">
+            <span data-i18n="composer.send">Enviar</span>
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+          </button>
+          <p class="composer__hint" id="composer-hint"></p>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <dialog class="dialog" id="simulator" aria-labelledby="simulator-title">
+    <form class="dialog__form" id="simulator-form">
+      <h2 id="simulator-title" data-i18n="simulator.title">Simular mensaje de cliente</h2>
+      <p class="dialog__lead" data-i18n="simulator.lead">Llega a la bandeja como si viniera de WhatsApp. Las respuestas no salen a ningún teléfono.</p>
+      <div class="field-row">
+        <label class="field">
+          <span data-i18n="simulator.name">Nombre</span>
+          <input name="customer" maxlength="60" autocomplete="off">
+        </label>
+        <label class="field">
+          <span data-i18n="simulator.phone">Teléfono</span>
+          <input name="phone" required pattern="\+?[0-9 ()\-]{7,20}" inputmode="tel" autocomplete="off">
+        </label>
+      </div>
+      <label class="field">
+        <span data-i18n="simulator.message">Mensaje</span>
+        <textarea name="text" rows="3" maxlength="1600" required></textarea>
+      </label>
+      <div class="ideas" id="ideas" data-i18n-attr="aria-label:simulator.ideas"></div>
+      <p class="dialog__error" id="simulator-error" hidden></p>
+      <div class="dialog__actions">
+        <button class="btn btn--ghost" type="button" data-action="close-simulator" data-i18n="simulator.cancel">Cancelar</button>
+        <button class="btn btn--primary" type="submit" data-i18n="simulator.submit">Enviar mensaje</button>
+      </div>
+    </form>
+  </dialog>
+</body>
+</html>

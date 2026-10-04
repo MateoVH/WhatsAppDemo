@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/WhatsAppDemo/WhatsAppDemo.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/WhatsAppDemo.Tests/WhatsAppDemo.Tests.csproj" />
+  </Folder>
+</Solution>
