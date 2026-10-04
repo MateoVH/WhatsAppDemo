@@ -10,7 +10,16 @@
 
 A minimal **ASP.NET Core (.NET 10)** demo: messages sent to the **Twilio** WhatsApp sandbox are answered by **Claude** and show up instantly in a **real-time web inbox powered by SignalR**. A human agent can take over any conversation with one click.
 
-<!-- Add a screenshot or GIF of the demo here, for example: ![Demo](docs/demo.gif) -->
+![Inbox in English, dark mode](docs/inbox-en.png)
+
+<details>
+<summary>More screenshots</summary>
+
+![Inbox in Spanish, light mode](docs/bandeja-es.png)
+
+![Start screen with the steps to connect the Twilio sandbox](docs/inicio.png)
+
+</details>
 
 ## What's inside
 

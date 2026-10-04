@@ -10,7 +10,16 @@
 
 Demo mínima en **ASP.NET Core (.NET 10)**: los mensajes que llegan al sandbox de WhatsApp de **Twilio** los responde **Claude** y aparecen al instante en una **bandeja web en tiempo real con SignalR**. Un asesor puede tomar cualquier conversación con un clic.
 
-<!-- Agrega aquí una captura o un GIF de la demo, por ejemplo: ![Demo](docs/demo.gif) -->
+![Bandeja en español, modo claro](docs/bandeja-es.png)
+
+<details>
+<summary>Más capturas</summary>
+
+![Bandeja en inglés, modo oscuro](docs/inbox-en.png)
+
+![Pantalla inicial con los pasos para conectar el sandbox de Twilio](docs/inicio.png)
+
+</details>
 
 ## Qué incluye
 
